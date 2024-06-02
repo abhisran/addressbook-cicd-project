@@ -1,60 +1,47 @@
+pipeline {
+    agent any  
+    stages {
+        stage("Checkout Git") {
+            steps {
+                echo "Checking out Git repository..."
+                git url: "https://github.com/abhisran60/addressbook-cicd-project.git"
+            }
+        }
 
-pipeline{
-    tools{
-        jdk 'myjava'
-        maven 'mymaven'
+        stage("Compile Code") {
+            steps {
+                echo "Compiling code..."
+                sh "mvn compile"
+            }
+        }
+
+        stage("Testing the code") {
+            steps {
+                echo "Maven Test..."
+                sh "mvn test"
+            }
+        }
+
+        stage("QA for the Code") {
+            steps {
+                echo "QA being done for the code..."
+                sh "mvn checkstyle:checkstyle"
+                recordIssues sourceCodeRetention: 'LAST_BUILD', tools: [checkStyle()]
+            }
+        }
+
+        stage("Converting the code to package") {
+            steps {
+                echo "Packaging being done..."
+                sh "mvn package"
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh "cp /var/lib/jenkins/workspace/addressbook-cicd-project/target/addressbook.war /opt/apache-tomcat-8.5.100/webapps/addressbook.war"
+                echo "Successfully deployed addressbook.war"
+            }
+        }
     }
-	agent any
-      stages{
-           stage('Checkout'){
-	    
-               steps{
-		 echo 'cloning..'
-                 git 'https://github.com/Sonal0409/DevOpsClassCodes.git'
-              }
-          }
-          stage('Compile'){
-             
-              steps{
-                  echo 'compiling..'
-                  sh 'mvn compile'
-	      }
-          }
-          stage('CodeReview'){
-		  
-              steps{
-		    
-		  echo 'codeReview'
-                  sh 'mvn pmd:pmd'
-              }
-          }
-           stage('UnitTest'){
-		  
-              steps{
-	         echo 'Testing'
-                  sh 'mvn test'
-              }
-               post {
-               success {
-                   junit 'target/surefire-reports/*.xml'
-               }
-           }	
-          }
-           stage('MetricCheck'){
-              
-              steps{
-                  sh 'mvn cobertura:cobertura -Dcobertura.report.format=xml'
-              }
-              
-          }
-          stage('Package'){
-		  
-              steps{
-		  
-                  sh 'mvn package'
-              }
-          }
-	     
-          
-      }
 }
