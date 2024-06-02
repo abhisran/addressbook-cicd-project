@@ -40,7 +40,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh "cp /var/lib/jenkins/workspace/addressbook-cicd-project/target/addressbook.war /opt/apache-tomcat-8.5.100/webapps/addressbook.war"
-                echo "Successfully deployed addressbook.war"
+                echo "Successfully deployed addressbook.war with apache tomcat"
             }
         }
     }
