@@ -1,37 +1,43 @@
 pipeline {
-    agent any
+    agent any  
     stages {
-        stage ("Git Checkout") {
+        stage("Checkout Git") {
             steps {
+                echo "Checking out Git repository..."
                 git url: "https://github.com/abhisran60/addressbook-cicd-project.git"
-                echo "Git checkout done"
             }
         }
-        stage ("Build") {
+
+        stage("Compile Code") {
             steps {
-                sh "mvn clean install"
-                echo "Build done"
+                echo "Compiling code..."
+                sh "mvn compile"
+            }
         }
-        stage ("Test") {
+
+        stage("Testing the code") {
             steps {
+                echo "Maven Test..."
                 sh "mvn test"
-                echo "Test done"
             }
         }
-        stage ("QA") {
+
+        stage("QA for the Code") {
             steps {
+                echo "QA being done for the code..."
                 sh "mvn checkstyle:checkstyle"
                 recordIssues sourceCodeRetention: 'LAST_BUILD', tools: [checkStyle()]
-                echo "QA done"
             }
         }
-        stage ("Package") {
+
+        stage("Converting the code to package") {
             steps {
+                echo "Packaging being done..."
                 sh "mvn package"
-                echo "Package done"
             }
         }
-        stage ("Deploy") {
+
+        stage('Deploy') {
             steps {
                 sh "cp /var/lib/jenkins/workspace/addressbook-cicd-project/target/addressbook.war /opt/apache-tomcat-8.5.100/webapps/addressbook.war"
                 echo "Successfully deployed addressbook.war with apache tomcat"
