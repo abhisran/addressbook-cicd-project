@@ -11,8 +11,8 @@ phases:
       - mvn package
   post_build:
     commands:
-      - echo Build completed
+      - echo Build completed successfully.
 artifacts:
   files:
-    - target/*.jar
+    - target/addressbook-cicd-project*.jar
   discard-paths: yes
